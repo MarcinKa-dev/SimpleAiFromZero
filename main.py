@@ -1,5 +1,5 @@
 import random
-import matplotlib
+import matplotlib.pyplot as plt
 
 class Neuron:
     def __init__(self, LayerId, ID, ActivateFunc = 0):
@@ -115,7 +115,7 @@ class NeuralNetwork:
 
 L = [Layer(2,0),Layer(15,1), Layer(15,2), Layer(1,3)]
 
-P = NeuralNetwork(L, LearningRate=0.2)
+P = NeuralNetwork(L, LearningRate=0.1)
 P.DropOut = 0.00
 
 # Test for Neural network. Draw 1000 time 2 number in range 0 - 5
@@ -129,16 +129,33 @@ for _ in range(10):
     Test[1000 + _][1] = random.random()*1000
     print(f"{Test[1000+_][0]+Test[1000+_][1]} == {P.runNetwork(Test[1000+_])}")
 
+
+Loss = []
+x = 2
 # Leeaaaarrrnnnnnniiiiiinnnngggg
 for _ in range(30000):
     r = random.randint(0,100)
     P.BackPropagation(Test[r],Test[r][0]+Test[r][1])
+
+    if _ != 0:
+        if _%100 == 0:
+            x+=1
+    if _%(1*x) == 0:
+        L = 1
+        for __ in range(50):
+            r = random.randint(101,500)
+            L = L + (Test[r][0]+Test[r][1] - P.runNetwork(Test[r]))**2
+        L = L/50
+        Loss.append(L)
+plt.ylim([0,1])
+plt.plot(range(len(Loss)),Loss)
 
 # Check last 10 additions on trained nn
 print("")
 for _ in range(10):
     print(f"{Test[1000+_][0]+Test[1000+_][1]} == {P.runNetwork(Test[1000+_])}")
 
+plt.show()
 # Nice Result:
 # 6.784353321416075 == -0.13083023941535152
 # 6.885501468226714 == -0.20796350121445006
